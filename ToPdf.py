@@ -723,11 +723,21 @@ def safe_crop_or_copy(
         return False
 
 
+def format_progress(index: int, total: int, label: str) -> str:
+    if total <= 0:
+        return f"[0/0] {label}"
+    ratio = index / total
+    percent = int(ratio * 100)
+    bar_width = 20
+    filled = min(bar_width, int(ratio * bar_width))
+    bar = "#" * filled + "-" * (bar_width - filled)
+    return f"[{index}/{total}] {percent:3d}% [{bar}] {label}"
+
+
 def process_file_task(task: FileTask, config: AppConfig, exporter: OfficeExporter, summary: ProcessSummary) -> None:
     logger = logging.getLogger(__name__)
     os.makedirs(os.path.dirname(task.output_pdf_path), exist_ok=True)
 
-    logger.info("处理中: %s", task.relative_path)
     if task.collision_note:
         logger.warning("输出文件名冲突，已改名: %s", task.collision_note)
 
@@ -824,10 +834,11 @@ def process_directory(config: AppConfig) -> ProcessSummary:
     logger.info("待处理文件: %d", len(tasks))
     logger.info("跳过文件: %d", len(skipped))
 
+    total_tasks = len(tasks)
     exporter = OfficeExporter(auto_install_missing_deps=config.runtime.auto_install_missing_deps)
     try:
         for index, task in enumerate(tasks, start=1):
-            logger.info("[%d/%d]", index, len(tasks))
+            logger.info("%s", format_progress(index, total_tasks, task.relative_path))
             try:
                 process_file_task(task, config, exporter, summary)
             except Exception as exc:

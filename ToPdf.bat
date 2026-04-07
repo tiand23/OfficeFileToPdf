@@ -66,7 +66,10 @@ echo [4/5] microsoft office com only >> "%LOG_FILE%"
 
 echo [5/5] Processing: "%SOURCE_PATH%"
 echo [5/5] run python script >> "%LOG_FILE%"
-python "%SCRIPT_DIR%ToPdf.py" "%SOURCE_PATH%" --output-dir res > "%PYTHON_LOG%" 2>&1
+set "TOPDF_SCRIPT=%SCRIPT_DIR%ToPdf.py"
+set "TOPDF_SOURCE=%SOURCE_PATH%"
+set "TOPDF_PYTHON_LOG=%PYTHON_LOG%"
+powershell -NoProfile -ExecutionPolicy Bypass -Command "& { & python -u $env:TOPDF_SCRIPT $env:TOPDF_SOURCE --output-dir res 2>&1 | Tee-Object -FilePath $env:TOPDF_PYTHON_LOG; exit $LASTEXITCODE }"
 set "EXIT_CODE=%ERRORLEVEL%"
 
 if not "%EXIT_CODE%"=="0" (
