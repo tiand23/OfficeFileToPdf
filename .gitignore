@@ -1,0 +1,20 @@
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+.venv/
+venv/
+
+# Generated output
+res/
+
+# Runtime logs
+ToPdf_run.log
+ToPdf_python.log
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
